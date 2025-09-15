@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Stethoscope, FileText, Calculator, User } from "lucide-react";
+import { Stethoscope, FileText, Calculator, User, ExternalLink } from "lucide-react";
 import { AnthropometricForm } from "@/components/forms/AnthropometricForm";
 import { ClinicalForm } from "@/components/forms/ClinicalForm";
 import { LaboratoryForm } from "@/components/forms/LaboratoryForm";
@@ -53,9 +53,20 @@ const Index = () => {
                 <h1 className="text-2xl font-semibold text-foreground">
                   Clinical Obesity Diagnostic Tool
                 </h1>
-                <p className="text-muted-foreground">
-                  Based on 2025 Lancet Commission Criteria
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-muted-foreground">
+                    Based on 2025 Lancet Commission Criteria
+                  </p>
+                  <a 
+                    href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)02404-2/fulltext"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary-hover transition-colors"
+                    title="View full text article"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </div>
               </div>
             </div>
             <Badge variant="outline" className="ml-auto">
