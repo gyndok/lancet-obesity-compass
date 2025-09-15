@@ -19,10 +19,12 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
     // Auto-calculate derived metrics
     const updates: Partial<AnthropometricData> = {};
     
-    // Calculate BMI
+    // Calculate BMI (using imperial units: weight in pounds, height in inches)
     if (formData.height && formData.weight) {
-      const heightM = formData.height / 100;
-      updates.bmi = parseFloat((formData.weight / (heightM * heightM)).toFixed(1));
+      // BMI = (weight in pounds / (height in inches)²) × 703
+      const heightInches = formData.height;
+      const weightPounds = formData.weight;
+      updates.bmi = parseFloat(((weightPounds / (heightInches * heightInches)) * 703).toFixed(1));
     }
     
     // Calculate waist-to-hip ratio
@@ -30,8 +32,9 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
       updates.waistHipRatio = parseFloat((formData.waistCircumference / formData.hipCircumference).toFixed(2));
     }
     
-    // Calculate waist-to-height ratio
+    // Calculate waist-to-height ratio (convert height from inches to same unit as waist)
     if (formData.waistCircumference && formData.height) {
+      // Convert height from inches to inches (waist measurements typically in inches for US)
       updates.waistHeightRatio = parseFloat((formData.waistCircumference / formData.height).toFixed(2));
     }
 
@@ -113,26 +116,27 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="height">Height (cm)</Label>
+            <Label htmlFor="height">Height (inches)</Label>
             <Input
               id="height"
               type="number"
+              step="0.5"
               value={formData.height || ""}
               onChange={(e) => handleInputChange("height", parseFloat(e.target.value) || undefined)}
-              placeholder="Enter height in cm"
+              placeholder="Enter height in inches"
               className="medical-input"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="weight">Weight (kg)</Label>
+            <Label htmlFor="weight">Weight (pounds)</Label>
             <Input
               id="weight"
               type="number"
               step="0.1"
               value={formData.weight || ""}
               onChange={(e) => handleInputChange("weight", parseFloat(e.target.value) || undefined)}
-              placeholder="Enter weight in kg"
+              placeholder="Enter weight in pounds"
               className="medical-input"
             />
           </div>
@@ -174,7 +178,7 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="waist">Waist Circumference (cm)</Label>
+            <Label htmlFor="waist">Waist Circumference (inches)</Label>
             <Input
               id="waist"
               type="number"
@@ -187,7 +191,7 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hip">Hip Circumference (cm)</Label>
+            <Label htmlFor="hip">Hip Circumference (inches)</Label>
             <Input
               id="hip"
               type="number"

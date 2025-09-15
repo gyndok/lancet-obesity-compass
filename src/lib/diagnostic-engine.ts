@@ -48,8 +48,10 @@ export class DiagnosticEngine {
     // Calculate BMI if not provided
     let bmi = anthro.bmi;
     if (!bmi && anthro.height && anthro.weight) {
-      const heightM = anthro.height / 100;
-      bmi = anthro.weight / (heightM * heightM);
+      // BMI calculation for imperial units (height in inches, weight in pounds)
+      const heightInches = anthro.height;
+      const weightPounds = anthro.weight;
+      bmi = (weightPounds / (heightInches * heightInches)) * 703;
     }
 
     // Very high BMI (>40) - excess adiposity assumed per Lancet Commission
@@ -59,9 +61,9 @@ export class DiagnosticEngine {
 
     // BMI ≥25 + additional anthropometric criteria
     if (bmi && bmi >= 25) {
-      // Check waist circumference (example thresholds)
+      // Check waist circumference (imperial thresholds in inches)
       if (anthro.waistCircumference) {
-        const threshold = anthro.sex === 'male' ? 102 : 88; // cm
+        const threshold = anthro.sex === 'male' ? 40 : 35; // inches
         if (anthro.waistCircumference >= threshold) {
           return true;
         }

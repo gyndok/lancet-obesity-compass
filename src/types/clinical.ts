@@ -1,9 +1,9 @@
 export interface AnthropometricData {
-  height?: number;
-  weight?: number;
+  height?: number; // inches
+  weight?: number; // pounds
   bmi?: number;
-  waistCircumference?: number;
-  hipCircumference?: number;
+  waistCircumference?: number; // inches
+  hipCircumference?: number; // inches
   waistHipRatio?: number;
   waistHeightRatio?: number;
   bodyFatPercentage?: number;
