@@ -182,6 +182,15 @@ export function FunctionalForm({ data, onUpdate }: FunctionalFormProps) {
                 />
                 <p className="text-xs text-muted-foreground">
                   If available, enter standardized quality of life score (e.g., SF-36, EQ-5D)
+                  <br />
+                  <a 
+                    href="https://www.rand.org/content/dam/rand/www/external/health/surveys_tools/mos/mos_core_36item_survey.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary-hover underline"
+                  >
+                    Download SF-36 Survey
+                  </a>
                 </p>
               </div>
             )}
