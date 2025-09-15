@@ -73,8 +73,8 @@ export class DiagnosticEngine {
                    ethnicity === 'thai' ||
                    ethnicity === 'filipino';
     const bmiPreObesityThreshold = isAsian ? 23 : 25; // Pre-obesity/Overweight
-    const bmiObesityThreshold = isAsian ? 25 : 30; // Class I Obesity
-    const bmiNormalThreshold = isAsian ? 23 : 25; // Normal BMI upper limit
+    const bmiObesityThreshold = isAsian ? 27 : 30; // Class I Obesity
+    const bmiNormalThreshold = isAsian ? 22.9 : 25; // Normal BMI upper limit
 
     // Very high BMI - excess adiposity assumed per Lancet Commission
     if (bmi && bmi > 40) {
