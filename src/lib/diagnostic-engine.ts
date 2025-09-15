@@ -118,10 +118,10 @@ export class DiagnosticEngine {
         }
       }
 
-      // Body fat percentage (using OMA Classification as primary)
-      if (anthro.bodyFatPercentage) {
-        const threshold = anthro.sex === 'male' ? 25 : 32; // Updated: ≥25% men, ≥32% women
-        if (anthro.bodyFatPercentage >= threshold) {
+      // Body fat percentage (age-based reference ranges)
+      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18) {
+        const normalRange = this.getBodyFatNormalRange(anthro.age, anthro.sex);
+        if (normalRange && anthro.bodyFatPercentage > normalRange.upper) {
           additionalRiskFactors++;
         }
       }
@@ -160,10 +160,10 @@ export class DiagnosticEngine {
         }
       }
 
-      // Body fat percentage (using OMA Classification as primary)
-      if (anthro.bodyFatPercentage) {
-        const threshold = anthro.sex === 'male' ? 25 : 32; // Updated: ≥25% men, ≥32% women
-        if (anthro.bodyFatPercentage >= threshold) {
+      // Body fat percentage (age-based reference ranges)
+      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18) {
+        const normalRange = this.getBodyFatNormalRange(anthro.age, anthro.sex);
+        if (normalRange && anthro.bodyFatPercentage > normalRange.upper) {
           return true;
         }
       }
@@ -366,5 +366,36 @@ export class DiagnosticEngine {
     }
 
     return Array.from(systems);
+  }
+
+  private static getBodyFatNormalRange(age: number, sex: string): { lower: number; upper: number } | null {
+    if (age < 18) return null;
+    
+    const ranges = {
+      male: {
+        '18-29': { lower: 12, upper: 19 },
+        '30-39': { lower: 14, upper: 22 },
+        '40-49': { lower: 16, upper: 24 },
+        '50-59': { lower: 18, upper: 26 },
+        '60+': { lower: 20, upper: 28 }
+      },
+      female: {
+        '18-29': { lower: 24, upper: 32 },
+        '30-39': { lower: 25, upper: 34 },
+        '40-49': { lower: 27, upper: 36 },
+        '50-59': { lower: 29, upper: 38 },
+        '60+': { lower: 30, upper: 40 }
+      }
+    };
+
+    const genderRanges = sex === 'male' ? ranges.male : ranges.female;
+    
+    if (age >= 18 && age <= 29) return genderRanges['18-29'];
+    if (age >= 30 && age <= 39) return genderRanges['30-39'];
+    if (age >= 40 && age <= 49) return genderRanges['40-49'];
+    if (age >= 50 && age <= 59) return genderRanges['50-59'];
+    if (age >= 60) return genderRanges['60+'];
+    
+    return null;
   }
 }
