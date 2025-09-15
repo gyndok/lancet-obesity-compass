@@ -61,25 +61,32 @@ export class DiagnosticEngine {
 
     // Ethnicity-specific BMI thresholds
     const isAsian = anthro.ethnicity && anthro.ethnicity.toLowerCase().includes('asian');
-    const bmiThreshold = isAsian ? 23 : 25;
-    const highBmiThreshold = isAsian ? 27.5 : 30;
+    const bmiPreObesityThreshold = isAsian ? 23 : 25; // Pre-obesity/Overweight
+    const bmiObesityThreshold = isAsian ? 25 : 30; // Class I Obesity
 
     // Very high BMI - excess adiposity assumed per Lancet Commission
     if (bmi && bmi > 40) {
       return true;
     }
 
-    // High BMI for ethnicity-specific obesity threshold
-    if (bmi && bmi >= highBmiThreshold) {
+    // BMI in obesity range for ethnicity-specific threshold
+    if (bmi && bmi >= bmiObesityThreshold) {
       return true;
     }
 
-    // BMI above ethnicity-specific threshold + additional anthropometric criteria
-    if (bmi && bmi >= bmiThreshold) {
-      // Check waist circumference (imperial thresholds in inches)
+    // BMI in pre-obesity range + additional anthropometric criteria
+    if (bmi && bmi >= bmiPreObesityThreshold) {
+      // Check waist circumference (ethnicity-specific thresholds)
       if (anthro.waistCircumference) {
-        const threshold = anthro.sex === 'male' ? 40 : 35; // inches
-        if (anthro.waistCircumference >= threshold) {
+        let thresholdInches;
+        if (isAsian) {
+          // Asian thresholds: 90cm for men, 80cm for women (convert to inches)
+          thresholdInches = anthro.sex === 'male' ? 35.4 : 31.5; // 90cm = 35.4", 80cm = 31.5"
+        } else {
+          // Standard thresholds: 40" for men, 35" for women
+          thresholdInches = anthro.sex === 'male' ? 40 : 35;
+        }
+        if (anthro.waistCircumference >= thresholdInches) {
           return true;
         }
       }
@@ -97,9 +104,9 @@ export class DiagnosticEngine {
         }
       }
 
-      // Direct body fat measurement
+      // Body fat percentage (using OMA Classification as primary)
       if (anthro.bodyFatPercentage) {
-        const threshold = anthro.sex === 'male' ? 25 : 35; // %
+        const threshold = anthro.sex === 'male' ? 30 : 35; // OMA: ≥30% men, ≥35% women
         if (anthro.bodyFatPercentage >= threshold) {
           return true;
         }
