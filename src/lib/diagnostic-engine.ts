@@ -54,13 +54,28 @@ export class DiagnosticEngine {
       bmi = (weightPounds / (heightInches * heightInches)) * 703;
     }
 
-    // Very high BMI (>40) - excess adiposity assumed per Lancet Commission
+    // Very high body fat percentage (>50%) - excess adiposity confirmed
+    if (anthro.bodyFatPercentage && anthro.bodyFatPercentage > 50) {
+      return true;
+    }
+
+    // Ethnicity-specific BMI thresholds
+    const isAsian = anthro.ethnicity && anthro.ethnicity.toLowerCase().includes('asian');
+    const bmiThreshold = isAsian ? 23 : 25;
+    const highBmiThreshold = isAsian ? 27.5 : 30;
+
+    // Very high BMI - excess adiposity assumed per Lancet Commission
     if (bmi && bmi > 40) {
       return true;
     }
 
-    // BMI ≥25 + additional anthropometric criteria
-    if (bmi && bmi >= 25) {
+    // High BMI for ethnicity-specific obesity threshold
+    if (bmi && bmi >= highBmiThreshold) {
+      return true;
+    }
+
+    // BMI above ethnicity-specific threshold + additional anthropometric criteria
+    if (bmi && bmi >= bmiThreshold) {
       // Check waist circumference (imperial thresholds in inches)
       if (anthro.waistCircumference) {
         const threshold = anthro.sex === 'male' ? 40 : 35; // inches

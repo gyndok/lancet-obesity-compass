@@ -52,12 +52,25 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
   };
 
   const getBMICategory = (bmi: number) => {
+    const isAsian = formData.ethnicity && formData.ethnicity.toLowerCase().includes('asian');
+    
     if (bmi < 18.5) return { category: "Underweight", color: "blue" };
-    if (bmi < 25) return { category: "Normal", color: "green" };
-    if (bmi < 30) return { category: "Overweight", color: "yellow" };
-    if (bmi < 35) return { category: "Obesity Class I", color: "orange" };
-    if (bmi < 40) return { category: "Obesity Class II", color: "red" };
-    return { category: "Obesity Class III", color: "red" };
+    
+    if (isAsian) {
+      // Asian-specific BMI categories
+      if (bmi < 23) return { category: "Normal", color: "green" };
+      if (bmi < 27.5) return { category: "Overweight", color: "yellow" };
+      if (bmi < 32.5) return { category: "Obesity Class I", color: "orange" };
+      if (bmi < 37.5) return { category: "Obesity Class II", color: "red" };
+      return { category: "Obesity Class III", color: "red" };
+    } else {
+      // Standard BMI categories
+      if (bmi < 25) return { category: "Normal", color: "green" };
+      if (bmi < 30) return { category: "Overweight", color: "yellow" };
+      if (bmi < 35) return { category: "Obesity Class I", color: "orange" };
+      if (bmi < 40) return { category: "Obesity Class II", color: "red" };
+      return { category: "Obesity Class III", color: "red" };
+    }
   };
 
   return (
