@@ -2,39 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Clinical Obesity Diagnostic App Design System */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    /* Medical Professional Color Palette */
+    --background: 0 0% 99%;
+    --foreground: 215 25% 15%;
+    
+    /* Medical Blue Primary */
+    --primary: 204 96% 27%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 204 76% 45%;
+    --primary-glow: 204 86% 85%;
+    
+    /* Clinical Teal Secondary */
+    --secondary: 174 52% 18%;
+    --secondary-foreground: 0 0% 98%;
+    --secondary-light: 174 42% 35%;
+    
+    /* Medical Interface Colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 215 25% 15%;
+    --card-border: 215 15% 92%;
+    
+    --input: 215 15% 96%;
+    --input-border: 215 20% 85%;
+    
+    /* Clinical Status Colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --success-light: 142 56% 92%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+    --warning-light: 38 72% 95%;
+    
+    --error: 0 84% 60%;
+    --error-foreground: 0 0% 98%;
+    --error-light: 0 64% 95%;
+    
+    /* Clinical Report Colors */
+    --clinical-obesity: 0 65% 51%;
+    --preclinical-obesity: 38 85% 58%;
+    --no-obesity: 142 69% 58%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-clinical: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(215 15% 98%));
+    
+    /* Shadows */
+    --shadow-medical: 0 4px 20px -2px hsl(var(--primary) / 0.1);
+    --shadow-card: 0 2px 12px -2px hsl(215 25% 15% / 0.08);
+    --shadow-form: 0 1px 6px -1px hsl(215 25% 15% / 0.06);
+    
+    /* Animation */
+    --transition-medical: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --muted: 215 15% 96%;
+    --muted-foreground: 215 25% 45%;
+    
+    --accent: 174 42% 96%;
+    --accent-foreground: 215 25% 15%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 215 15% 90%;
+    --ring: 204 96% 27%;
 
     --radius: 0.5rem;
 
@@ -56,8 +96,8 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 215 25% 8%;
+    --foreground: 0 0% 95%;
 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
@@ -100,6 +140,36 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  /* Medical Form Styles */
+  .medical-form {
+    @apply space-y-6;
+  }
+  
+  .medical-section {
+    @apply bg-card rounded-lg border border-card-border p-6 shadow-card;
+  }
+  
+  .medical-input {
+    @apply bg-input border-input-border transition-colors duration-200 focus:border-ring focus:ring-2 focus:ring-ring/20;
+  }
+  
+  .diagnostic-result {
+    @apply rounded-lg p-4 border-l-4 font-medium;
+  }
+  
+  .result-clinical {
+    @apply bg-red-50 border-l-red-500 text-red-900;
+  }
+  
+  .result-preclinical {
+    @apply bg-yellow-50 border-l-yellow-500 text-yellow-900;
+  }
+  
+  .result-no-obesity {
+    @apply bg-green-50 border-l-green-500 text-green-900;
   }
 }
