@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Stethoscope, FileText, Calculator, User, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Stethoscope, FileText, Calculator, User, ExternalLink, RotateCcw } from "lucide-react";
 import { AnthropometricForm } from "@/components/forms/AnthropometricForm";
 import { ClinicalForm } from "@/components/forms/ClinicalForm";
 import { LaboratoryForm } from "@/components/forms/LaboratoryForm";
@@ -39,6 +40,17 @@ const Index = () => {
     return data && Object.keys(data).length > 0;
   };
 
+  const handleClearAll = () => {
+    setPatientData({
+      anthropometrics: {},
+      clinical: {},
+      laboratory: {},
+      functional: {}
+    });
+    setDiagnosticResult(null);
+    setActiveTab("anthropometric");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
@@ -69,9 +81,20 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <Badge variant="outline" className="ml-auto">
-              Evidence-Based
-            </Badge>
+            <div className="ml-auto flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearAll}
+                className="flex items-center gap-2"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Clear All
+              </Button>
+              <Badge variant="outline">
+                Evidence-Based
+              </Badge>
+            </div>
           </div>
         </div>
       </header>
