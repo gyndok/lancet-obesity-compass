@@ -1,4 +1,10 @@
-import { PatientData, DiagnosticResult, DiagnosticCriteria } from "@/types/clinical";
+import {
+  PatientData,
+  DiagnosticResult,
+  DiagnosticCriteria,
+  AnthropometricData,
+  FunctionalData
+} from "@/types/clinical";
 
 export class DiagnosticEngine {
   static evaluate(data: PatientData): DiagnosticResult | null {
@@ -44,7 +50,7 @@ export class DiagnosticEngine {
     };
   }
 
-  private static confirmExcessAdiposity(anthro: any): boolean {
+  private static confirmExcessAdiposity(anthro: AnthropometricData): boolean {
     // Calculate BMI if not provided
     let bmi = anthro.bmi;
     if (!bmi && anthro.height && anthro.weight) {
@@ -119,7 +125,7 @@ export class DiagnosticEngine {
       }
 
       // Body fat percentage (age-based reference ranges)
-      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18) {
+      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18 && anthro.sex) {
         const normalRange = this.getBodyFatNormalRange(anthro.age, anthro.sex);
         if (normalRange && anthro.bodyFatPercentage > normalRange.upper) {
           additionalRiskFactors++;
@@ -161,7 +167,7 @@ export class DiagnosticEngine {
       }
 
       // Body fat percentage (age-based reference ranges)
-      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18) {
+      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18 && anthro.sex) {
         const normalRange = this.getBodyFatNormalRange(anthro.age, anthro.sex);
         if (normalRange && anthro.bodyFatPercentage > normalRange.upper) {
           return true;
@@ -216,7 +222,7 @@ export class DiagnosticEngine {
     return dysfunction;
   }
 
-  private static assessFunctionalLimitations(functional: any): string[] {
+  private static assessFunctionalLimitations(functional: FunctionalData): string[] {
     const limitations: string[] = [];
 
     if (functional.mobilityLimitations) limitations.push("Mobility limitations");
