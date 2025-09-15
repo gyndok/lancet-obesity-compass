@@ -60,7 +60,18 @@ export class DiagnosticEngine {
     }
 
     // Ethnicity-specific BMI thresholds
-    const isAsian = anthro.ethnicity && anthro.ethnicity.toLowerCase().includes('asian');
+    const ethnicity = anthro.ethnicity?.toLowerCase() || '';
+    const isAsian = ethnicity === 'asian' || 
+                   ethnicity.includes('east asian') || 
+                   ethnicity.includes('south asian') || 
+                   ethnicity.includes('southeast asian') ||
+                   ethnicity === 'chinese' ||
+                   ethnicity === 'japanese' ||
+                   ethnicity === 'korean' ||
+                   ethnicity === 'indian' ||
+                   ethnicity === 'vietnamese' ||
+                   ethnicity === 'thai' ||
+                   ethnicity === 'filipino';
     const bmiPreObesityThreshold = isAsian ? 23 : 25; // Pre-obesity/Overweight
     const bmiObesityThreshold = isAsian ? 25 : 30; // Class I Obesity
 

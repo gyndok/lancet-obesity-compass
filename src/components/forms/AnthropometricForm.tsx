@@ -52,7 +52,18 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
   };
 
   const getBMICategory = (bmi: number) => {
-    const isAsian = formData.ethnicity && formData.ethnicity.toLowerCase().includes('asian');
+    const ethnicity = formData.ethnicity?.toLowerCase() || '';
+    const isAsian = ethnicity === 'asian' || 
+                   ethnicity.includes('east asian') || 
+                   ethnicity.includes('south asian') || 
+                   ethnicity.includes('southeast asian') ||
+                   ethnicity === 'chinese' ||
+                   ethnicity === 'japanese' ||
+                   ethnicity === 'korean' ||
+                   ethnicity === 'indian' ||
+                   ethnicity === 'vietnamese' ||
+                   ethnicity === 'thai' ||
+                   ethnicity === 'filipino';
     
     if (bmi < 18.5) return { category: "Underweight", color: "blue" };
     
