@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,11 @@ interface FunctionalFormProps {
 
 export function FunctionalForm({ data, onUpdate }: FunctionalFormProps) {
   const [formData, setFormData] = useState<FunctionalData>(data);
+
+  // Sync form data when prop changes (for Clear All functionality)
+  useEffect(() => {
+    setFormData(data);
+  }, [data]);
 
   const handleCheckboxChange = (field: keyof FunctionalData, checked: boolean) => {
     const updatedData = { ...formData, [field]: checked };

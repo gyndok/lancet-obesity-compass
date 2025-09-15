@@ -15,6 +15,11 @@ interface AnthropometricFormProps {
 export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) {
   const [formData, setFormData] = useState<AnthropometricData>(data);
 
+  // Sync form data when prop changes (for Clear All functionality)
+  useEffect(() => {
+    setFormData(data);
+  }, [data]);
+
   useEffect(() => {
     // Auto-calculate derived metrics
     const updates: Partial<AnthropometricData> = {};
