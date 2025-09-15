@@ -58,7 +58,7 @@ const Index = () => {
                     Based on 2025 Lancet Commission Criteria
                   </p>
                   <a 
-                    href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)02404-2/fulltext"
+                    href="https://www.thelancet.com/journals/landia/article/PIIS2213-8587(24)00316-4/fulltext"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:text-primary-hover transition-colors"
