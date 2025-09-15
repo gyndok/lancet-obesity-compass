@@ -54,8 +54,8 @@ export class DiagnosticEngine {
       bmi = (weightPounds / (heightInches * heightInches)) * 703;
     }
 
-    // Very high body fat percentage (>50%) - excess adiposity confirmed
-    if (anthro.bodyFatPercentage && anthro.bodyFatPercentage > 50) {
+    // Very high body fat percentage (>45%) - excess adiposity confirmed regardless of BMI
+    if (anthro.bodyFatPercentage && anthro.bodyFatPercentage > 45) {
       return true;
     }
 
@@ -74,6 +74,7 @@ export class DiagnosticEngine {
                    ethnicity === 'filipino';
     const bmiPreObesityThreshold = isAsian ? 23 : 25; // Pre-obesity/Overweight
     const bmiObesityThreshold = isAsian ? 25 : 30; // Class I Obesity
+    const bmiNormalThreshold = isAsian ? 23 : 25; // Normal BMI upper limit
 
     // Very high BMI - excess adiposity assumed per Lancet Commission
     if (bmi && bmi > 40) {
@@ -83,6 +84,50 @@ export class DiagnosticEngine {
     // BMI in obesity range for ethnicity-specific threshold
     if (bmi && bmi >= bmiObesityThreshold) {
       return true;
+    }
+
+    // For clearly normal BMI, require multiple additional risk factors
+    if (bmi && bmi < bmiNormalThreshold) {
+      let additionalRiskFactors = 0;
+
+      // Check waist circumference (ethnicity-specific thresholds)
+      if (anthro.waistCircumference) {
+        let thresholdInches;
+        if (isAsian) {
+          // Asian thresholds: 90cm for men, 80cm for women (convert to inches)
+          thresholdInches = anthro.sex === 'male' ? 35.4 : 31.5; // 90cm = 35.4", 80cm = 31.5"
+        } else {
+          // Standard thresholds: 40" for men, 35" for women
+          thresholdInches = anthro.sex === 'male' ? 40 : 35;
+        }
+        if (anthro.waistCircumference >= thresholdInches) {
+          additionalRiskFactors++;
+        }
+      }
+
+      // Check waist-to-height ratio
+      if (anthro.waistHeightRatio && anthro.waistHeightRatio >= 0.5) {
+        additionalRiskFactors++;
+      }
+
+      // Check waist-to-hip ratio
+      if (anthro.waistHipRatio) {
+        const threshold = anthro.sex === 'male' ? 0.9 : 0.85;
+        if (anthro.waistHipRatio >= threshold) {
+          additionalRiskFactors++;
+        }
+      }
+
+      // Body fat percentage (using OMA Classification as primary)
+      if (anthro.bodyFatPercentage) {
+        const threshold = anthro.sex === 'male' ? 30 : 35; // OMA: ≥30% men, ≥35% women
+        if (anthro.bodyFatPercentage >= threshold) {
+          additionalRiskFactors++;
+        }
+      }
+
+      // Require at least 2 additional risk factors for normal BMI to be considered excess adiposity
+      return additionalRiskFactors >= 2;
     }
 
     // BMI in pre-obesity range + additional anthropometric criteria
