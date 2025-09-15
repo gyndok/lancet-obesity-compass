@@ -74,10 +74,10 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
     
     if (isAsian) {
       // Asian-specific BMI categories
-      if (bmi < 23) return { category: "Normal", color: "green" };
-      if (bmi < 25) return { category: "Pre-obesity", color: "yellow" };
-      if (bmi < 30) return { category: "Obesity Class I", color: "orange" };
-      if (bmi < 35) return { category: "Obesity Class II", color: "red" };
+      if (bmi <= 22.9) return { category: "Normal", color: "green" };
+      if (bmi <= 26.9) return { category: "Overweight", color: "yellow" };
+      if (bmi <= 32.5) return { category: "Obesity Class I", color: "orange" };
+      if (bmi <= 37.5) return { category: "Obesity Class II", color: "red" };
       return { category: "Obesity Class III", color: "red" };
     } else {
       // Standard BMI categories
