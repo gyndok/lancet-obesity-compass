@@ -120,7 +120,7 @@ export class DiagnosticEngine {
 
       // Body fat percentage (using OMA Classification as primary)
       if (anthro.bodyFatPercentage) {
-        const threshold = anthro.sex === 'male' ? 30 : 35; // OMA: ≥30% men, ≥35% women
+        const threshold = anthro.sex === 'male' ? 25 : 32; // Updated: ≥25% men, ≥32% women
         if (anthro.bodyFatPercentage >= threshold) {
           additionalRiskFactors++;
         }
@@ -162,7 +162,7 @@ export class DiagnosticEngine {
 
       // Body fat percentage (using OMA Classification as primary)
       if (anthro.bodyFatPercentage) {
-        const threshold = anthro.sex === 'male' ? 30 : 35; // OMA: ≥30% men, ≥35% women
+        const threshold = anthro.sex === 'male' ? 25 : 32; // Updated: ≥25% men, ≥32% women
         if (anthro.bodyFatPercentage >= threshold) {
           return true;
         }
