@@ -240,7 +240,7 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
               step="0.1"
               value={formData.bodyFatPercentage || ""}
               onChange={(e) => handleInputChange("bodyFatPercentage", parseFloat(e.target.value) || undefined)}
-              placeholder="If available (DEXA/BodPod)"
+              placeholder="If available"
               className="medical-input"
             />
           </div>
