@@ -86,6 +86,11 @@ export class DiagnosticEngine {
       return true;
     }
 
+    // BMI in overweight range confirms excess adiposity
+    if (bmi && bmi >= bmiPreObesityThreshold) {
+      return true;
+    }
+
     // For clearly normal BMI, require multiple additional risk factors
     if (bmi && bmi < bmiNormalThreshold) {
       let additionalRiskFactors = 0;
@@ -128,45 +133,6 @@ export class DiagnosticEngine {
 
       // Require at least 2 additional risk factors for normal BMI to be considered excess adiposity
       return additionalRiskFactors >= 2;
-    }
-
-    // BMI in pre-obesity range + additional anthropometric criteria
-    if (bmi && bmi >= bmiPreObesityThreshold) {
-      // Check waist circumference (ethnicity-specific thresholds)
-      if (anthro.waistCircumference) {
-        let thresholdInches;
-        if (isAsian) {
-          // Asian thresholds: 90cm for men, 80cm for women (convert to inches)
-          thresholdInches = anthro.sex === 'male' ? 35.4 : 31.5; // 90cm = 35.4", 80cm = 31.5"
-        } else {
-          // Standard thresholds: 40" for men, 35" for women
-          thresholdInches = anthro.sex === 'male' ? 40 : 35;
-        }
-        if (anthro.waistCircumference >= thresholdInches) {
-          return true;
-        }
-      }
-
-      // Check waist-to-height ratio
-      if (anthro.waistHeightRatio && anthro.waistHeightRatio >= 0.5) {
-        return true;
-      }
-
-      // Check waist-to-hip ratio
-      if (anthro.waistHipRatio) {
-        const threshold = anthro.sex === 'male' ? 0.9 : 0.85;
-        if (anthro.waistHipRatio >= threshold) {
-          return true;
-        }
-      }
-
-      // Body fat percentage (age-based reference ranges)
-      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18) {
-        const normalRange = this.getBodyFatNormalRange(anthro.age, anthro.sex);
-        if (normalRange && anthro.bodyFatPercentage > normalRange.upper) {
-          return true;
-        }
-      }
     }
 
     return false;
