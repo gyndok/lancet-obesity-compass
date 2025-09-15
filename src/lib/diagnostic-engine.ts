@@ -27,7 +27,8 @@ export class DiagnosticEngine {
   private static hasMinimumData(data: PatientData): boolean {
     // Require basic anthropometric data at minimum
     const anthro = data.anthropometrics;
-    return !!(anthro.height && anthro.weight) || !!anthro.bmi;
+    const hasHeightAndWeight = anthro.height !== undefined && anthro.weight !== undefined;
+    return hasHeightAndWeight || anthro.bmi !== undefined;
   }
 
   private static assessCriteria(data: PatientData): DiagnosticCriteria {
@@ -47,7 +48,7 @@ export class DiagnosticEngine {
   private static confirmExcessAdiposity(anthro: any): boolean {
     // Calculate BMI if not provided
     let bmi = anthro.bmi;
-    if (!bmi && anthro.height && anthro.weight) {
+    if (bmi === undefined && anthro.height !== undefined && anthro.weight !== undefined) {
       // BMI calculation for imperial units (height in inches, weight in pounds)
       const heightInches = anthro.height;
       const weightPounds = anthro.weight;
@@ -55,7 +56,7 @@ export class DiagnosticEngine {
     }
 
     // Very high body fat percentage (>45%) - excess adiposity confirmed regardless of BMI
-    if (anthro.bodyFatPercentage && anthro.bodyFatPercentage > 45) {
+    if (anthro.bodyFatPercentage !== undefined && anthro.bodyFatPercentage > 45) {
       return true;
     }
 
@@ -77,21 +78,21 @@ export class DiagnosticEngine {
     const bmiNormalThreshold = isAsian ? 22.9 : 25; // Normal BMI upper limit
 
     // Very high BMI - excess adiposity assumed per Lancet Commission
-    if (bmi && bmi > 40) {
+    if (bmi !== undefined && bmi > 40) {
       return true;
     }
 
     // BMI in obesity range for ethnicity-specific threshold
-    if (bmi && bmi >= bmiObesityThreshold) {
+    if (bmi !== undefined && bmi >= bmiObesityThreshold) {
       return true;
     }
 
     // For clearly normal BMI, require multiple additional risk factors
-    if (bmi && bmi < bmiNormalThreshold) {
+    if (bmi !== undefined && bmi < bmiNormalThreshold) {
       let additionalRiskFactors = 0;
 
       // Check waist circumference (ethnicity-specific thresholds)
-      if (anthro.waistCircumference) {
+      if (anthro.waistCircumference !== undefined) {
         let thresholdInches;
         if (isAsian) {
           // Asian thresholds: 90cm for men, 80cm for women (convert to inches)
@@ -106,12 +107,12 @@ export class DiagnosticEngine {
       }
 
       // Check waist-to-height ratio
-      if (anthro.waistHeightRatio && anthro.waistHeightRatio >= 0.5) {
+      if (anthro.waistHeightRatio !== undefined && anthro.waistHeightRatio >= 0.5) {
         additionalRiskFactors++;
       }
 
       // Check waist-to-hip ratio
-      if (anthro.waistHipRatio) {
+      if (anthro.waistHipRatio !== undefined) {
         const threshold = anthro.sex === 'male' ? 0.9 : 0.85;
         if (anthro.waistHipRatio >= threshold) {
           additionalRiskFactors++;
@@ -119,7 +120,7 @@ export class DiagnosticEngine {
       }
 
       // Body fat percentage (age-based reference ranges)
-      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18) {
+      if (anthro.bodyFatPercentage !== undefined && anthro.age !== undefined && anthro.age >= 18) {
         const normalRange = this.getBodyFatNormalRange(anthro.age, anthro.sex);
         if (normalRange && anthro.bodyFatPercentage > normalRange.upper) {
           additionalRiskFactors++;
@@ -131,9 +132,9 @@ export class DiagnosticEngine {
     }
 
     // BMI in pre-obesity range + additional anthropometric criteria
-    if (bmi && bmi >= bmiPreObesityThreshold) {
+    if (bmi !== undefined && bmi >= bmiPreObesityThreshold) {
       // Check waist circumference (ethnicity-specific thresholds)
-      if (anthro.waistCircumference) {
+      if (anthro.waistCircumference !== undefined) {
         let thresholdInches;
         if (isAsian) {
           // Asian thresholds: 90cm for men, 80cm for women (convert to inches)
@@ -148,12 +149,12 @@ export class DiagnosticEngine {
       }
 
       // Check waist-to-height ratio
-      if (anthro.waistHeightRatio && anthro.waistHeightRatio >= 0.5) {
+      if (anthro.waistHeightRatio !== undefined && anthro.waistHeightRatio >= 0.5) {
         return true;
       }
 
       // Check waist-to-hip ratio
-      if (anthro.waistHipRatio) {
+      if (anthro.waistHipRatio !== undefined) {
         const threshold = anthro.sex === 'male' ? 0.9 : 0.85;
         if (anthro.waistHipRatio >= threshold) {
           return true;
@@ -161,7 +162,7 @@ export class DiagnosticEngine {
       }
 
       // Body fat percentage (age-based reference ranges)
-      if (anthro.bodyFatPercentage && anthro.age && anthro.age >= 18) {
+      if (anthro.bodyFatPercentage !== undefined && anthro.age !== undefined && anthro.age >= 18) {
         const normalRange = this.getBodyFatNormalRange(anthro.age, anthro.sex);
         if (normalRange && anthro.bodyFatPercentage > normalRange.upper) {
           return true;
@@ -177,8 +178,8 @@ export class DiagnosticEngine {
     const { clinical, laboratory } = data;
 
     // Metabolic dysfunction
-    if (clinical.type2Diabetes || (laboratory.hba1c && laboratory.hba1c >= 6.5) || 
-        (laboratory.fastingGlucose && laboratory.fastingGlucose >= 126)) {
+    if (clinical.type2Diabetes || (laboratory.hba1c !== undefined && laboratory.hba1c >= 6.5) ||
+        (laboratory.fastingGlucose !== undefined && laboratory.fastingGlucose >= 126)) {
       dysfunction.push("Metabolic: Type 2 diabetes");
     }
 
@@ -188,13 +189,13 @@ export class DiagnosticEngine {
     }
 
     // Hepatic dysfunction
-    if (clinical.nafld || laboratory.fibrosis || 
-        (laboratory.alt && laboratory.alt > 40) || (laboratory.ast && laboratory.ast > 40)) {
+    if (clinical.nafld || laboratory.fibrosis ||
+        (laboratory.alt !== undefined && laboratory.alt > 40) || (laboratory.ast !== undefined && laboratory.ast > 40)) {
       dysfunction.push("Hepatic: NAFLD/elevated enzymes");
     }
 
     // Renal dysfunction
-    if ((laboratory.egfr && laboratory.egfr < 60) || laboratory.microalbuminuria) {
+    if ((laboratory.egfr !== undefined && laboratory.egfr < 60) || laboratory.microalbuminuria) {
       dysfunction.push("Renal: Decreased eGFR/albuminuria");
     }
 
@@ -241,13 +242,13 @@ export class DiagnosticEngine {
     if (clinical.mentalHealth) risks.push("Mental health concerns");
 
     // Laboratory risk factors
-    if (laboratory.triglycerides && laboratory.triglycerides >= 150) {
+    if (laboratory.triglycerides !== undefined && laboratory.triglycerides >= 150) {
       risks.push("Elevated triglycerides");
     }
-    if (laboratory.hdl && laboratory.hdl < 40) {
+    if (laboratory.hdl !== undefined && laboratory.hdl < 40) {
       risks.push("Low HDL cholesterol");
     }
-    if (laboratory.crp && laboratory.crp > 3) {
+    if (laboratory.crp !== undefined && laboratory.crp > 3) {
       risks.push("Elevated CRP (inflammation)");
     }
 
@@ -274,9 +275,9 @@ export class DiagnosticEngine {
 
     // Anthropometric data completeness
     const anthro = data.anthropometrics;
-    if (anthro.height && anthro.weight) score++;
-    if (anthro.waistCircumference) score++;
-    if (anthro.bodyFatPercentage) score++;
+    if (anthro.height !== undefined && anthro.weight !== undefined) score++;
+    if (anthro.waistCircumference !== undefined) score++;
+    if (anthro.bodyFatPercentage !== undefined) score++;
 
     // Clinical data completeness
     const clinicalFields = Object.values(data.clinical).filter(v => v !== undefined).length;
@@ -346,7 +347,7 @@ export class DiagnosticEngine {
   private static identifyAffectedSystems(data: PatientData): string[] {
     const systems: Set<string> = new Set();
 
-    if (data.clinical.type2Diabetes || (data.laboratory.hba1c && data.laboratory.hba1c >= 6.5)) {
+    if (data.clinical.type2Diabetes || (data.laboratory.hba1c !== undefined && data.laboratory.hba1c >= 6.5)) {
       systems.add("Endocrine/Metabolic");
     }
     if (data.clinical.hypertension || data.clinical.cardiovascularDisease) {
