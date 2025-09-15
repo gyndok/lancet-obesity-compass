@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { escapeHtml } from "@/lib/utils";
 import { DiagnosticResult, PatientData } from "@/types/clinical";
 import { FileText, Download, AlertCircle, CheckCircle, AlertTriangle, TrendingUp } from "lucide-react";
 
@@ -10,6 +11,253 @@ interface DiagnosticResultsProps {
   result: DiagnosticResult | null;
   patientData: PatientData;
 }
+
+interface ClassificationDetails {
+  label: string;
+  description: string;
+  color: "destructive" | "warning" | "success" | "secondary";
+  icon: JSX.Element;
+  bgClass: string;
+}
+
+const getClassificationDetails = (classification: string): ClassificationDetails => {
+  switch (classification) {
+    case "clinical-obesity":
+      return {
+        label: "Clinical Obesity",
+        description: "Excess adiposity with organ dysfunction or functional limitations",
+        color: "destructive",
+        icon: <AlertCircle className="h-4 w-4" />,
+        bgClass: "result-clinical",
+      };
+    case "preclinical-obesity":
+      return {
+        label: "Preclinical Obesity",
+        description: "Excess adiposity without organ dysfunction",
+        color: "warning",
+        icon: <AlertTriangle className="h-4 w-4" />,
+        bgClass: "result-preclinical",
+      };
+    case "no-obesity":
+      return {
+        label: "No Obesity",
+        description: "Excess adiposity not confirmed",
+        color: "success",
+        icon: <CheckCircle className="h-4 w-4" />,
+        bgClass: "result-no-obesity",
+      };
+    default:
+      return {
+        label: "Assessment Pending",
+        description: "Insufficient data for classification",
+        color: "secondary",
+        icon: <AlertCircle className="h-4 w-4" />,
+        bgClass: "",
+      };
+  }
+};
+
+const renderListItems = (items: string[]) =>
+  items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+
+const generatePatientDataSummary = (patientData: PatientData) => {
+  const anthro = patientData.anthropometrics;
+  const clinical = patientData.clinical;
+  const lab = patientData.laboratory;
+
+  return `
+    <div class="section">
+        <h3>Patient Data Summary</h3>
+
+        ${Object.keys(anthro).length > 0 ? `
+        <h4>Anthropometric Data</h4>
+        <ul>
+            ${anthro.height ? `<li>Height: ${escapeHtml(anthro.height)} inches</li>` : ""}
+            ${anthro.weight ? `<li>Weight: ${escapeHtml(anthro.weight)} pounds</li>` : ""}
+            ${anthro.bmi ? `<li>BMI: ${escapeHtml(anthro.bmi)} kg/m²</li>` : ""}
+            ${anthro.waistCircumference ? `<li>Waist Circumference: ${escapeHtml(anthro.waistCircumference)} inches</li>` : ""}
+            ${anthro.waistHipRatio ? `<li>Waist-to-Hip Ratio: ${escapeHtml(anthro.waistHipRatio)}</li>` : ""}
+        </ul>
+        ` : ""}
+
+        ${Object.keys(clinical).some((key) => clinical[key as keyof typeof clinical]) ? `
+        <h4>Clinical Findings</h4>
+        <ul>
+            ${clinical.type2Diabetes ? "<li>Type 2 Diabetes</li>" : ""}
+            ${clinical.hypertension ? "<li>Hypertension</li>" : ""}
+            ${clinical.sleepApnea ? "<li>Sleep Apnea</li>" : ""}
+            ${clinical.nafld ? "<li>NAFLD</li>" : ""}
+            ${clinical.breathlessness ? "<li>Breathlessness</li>" : ""}
+            ${clinical.fatigue ? "<li>Chronic Fatigue</li>" : ""}
+        </ul>
+        ` : ""}
+
+        ${Object.keys(lab).some((key) => lab[key as keyof typeof lab] !== undefined) ? `
+        <h4>Laboratory Values</h4>
+        <ul>
+            ${lab.fastingGlucose ? `<li>Fasting Glucose: ${escapeHtml(lab.fastingGlucose)} mg/dL</li>` : ""}
+            ${lab.hba1c ? `<li>HbA1c: ${escapeHtml(lab.hba1c)}%</li>` : ""}
+            ${lab.triglycerides ? `<li>Triglycerides: ${escapeHtml(lab.triglycerides)} mg/dL</li>` : ""}
+            ${lab.hdl ? `<li>HDL: ${escapeHtml(lab.hdl)} mg/dL</li>` : ""}
+        </ul>
+        ` : ""}
+    </div>`;
+};
+
+interface GenerateReportContentParams {
+  result: DiagnosticResult | null;
+  patientData: PatientData;
+  currentDate?: string;
+}
+
+export const generateReportContent = ({
+  result,
+  patientData,
+  currentDate = new Date().toLocaleDateString(),
+}: GenerateReportContentParams) => {
+  if (!result) {
+    return "";
+  }
+
+  const classificationDetails = getClassificationDetails(result.classification);
+  const classificationLabel = escapeHtml(classificationDetails.label);
+  const classificationDescription = escapeHtml(classificationDetails.description);
+  const diagnosticConfidence = escapeHtml(result.confidence);
+  const reasoning = escapeHtml(result.reasoning);
+  const organDysfunctionItems = renderListItems(result.criteria.organDysfunction);
+  const functionalLimitationsItems = renderListItems(result.criteria.functionalLimitations);
+  const affectedSystemsItems = renderListItems(result.affectedSystems);
+  const recommendationItems = renderListItems(result.recommendations);
+  const riskFactorItems = renderListItems(result.criteria.riskFactors);
+  const sanitizedDate = escapeHtml(currentDate);
+  const patientSummary = generatePatientDataSummary(patientData);
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Obesity Diagnostic Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .classification {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .section {
+            margin: 25px 0;
+        }
+        .section h3 {
+            color: #1e40af;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 5px;
+        }
+        ul {
+            margin: 10px 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Clinical Obesity Diagnostic Report</h1>
+        <p><strong>Assessment Date:</strong> ${sanitizedDate}</p>
+        <p><em>Based on 2025 Lancet Commission Criteria</em></p>
+    </div>
+
+    <div class="classification">
+        <h2>Diagnostic Classification</h2>
+        <p><strong>${classificationLabel}</strong></p>
+        <p>${classificationDescription}</p>
+        <p><strong>Diagnostic Confidence:</strong> ${diagnosticConfidence}</p>
+        ${result.criteria.excessAdiposityConfirmed ? "<p><strong>✓ Excess adiposity confirmed</strong></p>" : "<p><strong>✗ Excess adiposity not confirmed</strong></p>"}
+    </div>
+
+    <div class="section">
+        <h3>Clinical Reasoning</h3>
+        <p>${reasoning}</p>
+    </div>
+
+    ${result.criteria.organDysfunction.length > 0 ? `
+    <div class="section">
+        <h3>Organ Dysfunction Identified</h3>
+        <ul>
+            ${organDysfunctionItems}
+        </ul>
+    </div>
+    ` : ""}
+
+    ${result.criteria.functionalLimitations.length > 0 ? `
+    <div class="section">
+        <h3>Functional Limitations</h3>
+        <ul>
+            ${functionalLimitationsItems}
+        </ul>
+    </div>
+    ` : ""}
+
+    ${result.affectedSystems.length > 0 ? `
+    <div class="section">
+        <h3>Affected Systems</h3>
+        <ul>
+            ${affectedSystemsItems}
+        </ul>
+    </div>
+    ` : ""}
+
+    <div class="section">
+        <h3>Clinical Recommendations</h3>
+        <ul>
+            ${recommendationItems}
+        </ul>
+    </div>
+
+    ${result.criteria.riskFactors.length > 0 ? `
+    <div class="section">
+        <h3>Risk Factors</h3>
+        <ul>
+            ${riskFactorItems}
+        </ul>
+    </div>
+    ` : ""}
+
+    ${patientSummary}
+
+    <div class="footer">
+        <p><strong>Important:</strong> This diagnostic tool supports clinical decision-making based on evidence-based Lancet Commission criteria but does not replace clinical judgment. Please correlate findings with complete clinical assessment.</p>
+        <p><strong>Reference:</strong> Rubino F, et al. Definition and diagnostic criteria of clinical obesity. Lancet Diabetes Endocrinol. 2025.</p>
+    </div>
+</body>
+</html>`;
+};
 
 export function DiagnosticResults({ result, patientData }: DiagnosticResultsProps) {
   if (!result) {
@@ -36,43 +284,6 @@ export function DiagnosticResults({ result, patientData }: DiagnosticResultsProp
     );
   }
 
-  const getClassificationDetails = (classification: string) => {
-    switch (classification) {
-      case 'clinical-obesity':
-        return {
-          label: 'Clinical Obesity',
-          description: 'Excess adiposity with organ dysfunction or functional limitations',
-          color: 'destructive',
-          icon: <AlertCircle className="h-4 w-4" />,
-          bgClass: 'result-clinical'
-        };
-      case 'preclinical-obesity':
-        return {
-          label: 'Preclinical Obesity',
-          description: 'Excess adiposity without organ dysfunction',
-          color: 'warning',
-          icon: <AlertTriangle className="h-4 w-4" />,
-          bgClass: 'result-preclinical'
-        };
-      case 'no-obesity':
-        return {
-          label: 'No Obesity',
-          description: 'Excess adiposity not confirmed',
-          color: 'success',
-          icon: <CheckCircle className="h-4 w-4" />,
-          bgClass: 'result-no-obesity'
-        };
-      default:
-        return {
-          label: 'Assessment Pending',
-          description: 'Insufficient data for classification',
-          color: 'secondary',
-          icon: <AlertCircle className="h-4 w-4" />,
-          bgClass: ''
-        };
-    }
-  };
-
   const getConfidenceColor = (confidence: string) => {
     switch (confidence) {
       case 'high': return 'success';
@@ -86,8 +297,8 @@ export function DiagnosticResults({ result, patientData }: DiagnosticResultsProp
 
   const exportReport = () => {
     if (!result) return;
-    
-    const reportContent = generateReportContent();
+
+    const reportContent = generateReportContent({ result, patientData });
     const blob = new Blob([reportContent], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -97,183 +308,6 @@ export function DiagnosticResults({ result, patientData }: DiagnosticResultsProp
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
-
-  const generateReportContent = () => {
-    if (!result) return '';
-    
-    const classificationDetails = getClassificationDetails(result.classification);
-    const currentDate = new Date().toLocaleDateString();
-    
-    return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Obesity Diagnostic Report</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            line-height: 1.6; 
-        }
-        .header { 
-            text-align: center; 
-            border-bottom: 2px solid #2563eb; 
-            padding-bottom: 20px; 
-            margin-bottom: 30px; 
-        }
-        .classification { 
-            background: #f8fafc; 
-            border-left: 4px solid #2563eb; 
-            padding: 15px; 
-            margin: 20px 0; 
-        }
-        .section { 
-            margin: 25px 0; 
-        }
-        .section h3 { 
-            color: #1e40af; 
-            border-bottom: 1px solid #e5e7eb; 
-            padding-bottom: 5px; 
-        }
-        ul { 
-            margin: 10px 0; 
-        }
-        li { 
-            margin: 5px 0; 
-        }
-        .footer { 
-            margin-top: 40px; 
-            padding-top: 20px; 
-            border-top: 1px solid #e5e7eb; 
-            font-size: 0.9em; 
-            color: #6b7280; 
-        }
-        @media print {
-            body { margin: 0; }
-            .no-print { display: none; }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Clinical Obesity Diagnostic Report</h1>
-        <p><strong>Assessment Date:</strong> ${currentDate}</p>
-        <p><em>Based on 2025 Lancet Commission Criteria</em></p>
-    </div>
-
-    <div class="classification">
-        <h2>Diagnostic Classification</h2>
-        <p><strong>${classificationDetails.label}</strong></p>
-        <p>${classificationDetails.description}</p>
-        <p><strong>Diagnostic Confidence:</strong> ${result.confidence}</p>
-        ${result.criteria.excessAdiposityConfirmed ? '<p><strong>✓ Excess adiposity confirmed</strong></p>' : '<p><strong>✗ Excess adiposity not confirmed</strong></p>'}
-    </div>
-
-    <div class="section">
-        <h3>Clinical Reasoning</h3>
-        <p>${result.reasoning}</p>
-    </div>
-
-    ${result.criteria.organDysfunction.length > 0 ? `
-    <div class="section">
-        <h3>Organ Dysfunction Identified</h3>
-        <ul>
-            ${result.criteria.organDysfunction.map(dysfunction => `<li>${dysfunction}</li>`).join('')}
-        </ul>
-    </div>
-    ` : ''}
-
-    ${result.criteria.functionalLimitations.length > 0 ? `
-    <div class="section">
-        <h3>Functional Limitations</h3>
-        <ul>
-            ${result.criteria.functionalLimitations.map(limitation => `<li>${limitation}</li>`).join('')}
-        </ul>
-    </div>
-    ` : ''}
-
-    ${result.affectedSystems.length > 0 ? `
-    <div class="section">
-        <h3>Affected Systems</h3>
-        <ul>
-            ${result.affectedSystems.map(system => `<li>${system}</li>`).join('')}
-        </ul>
-    </div>
-    ` : ''}
-
-    <div class="section">
-        <h3>Clinical Recommendations</h3>
-        <ul>
-            ${result.recommendations.map(rec => `<li>${rec}</li>`).join('')}
-        </ul>
-    </div>
-
-    ${result.criteria.riskFactors.length > 0 ? `
-    <div class="section">
-        <h3>Risk Factors</h3>
-        <ul>
-            ${result.criteria.riskFactors.map(risk => `<li>${risk}</li>`).join('')}
-        </ul>
-    </div>
-    ` : ''}
-
-    ${generatePatientDataSummary()}
-
-    <div class="footer">
-        <p><strong>Important:</strong> This diagnostic tool supports clinical decision-making based on evidence-based Lancet Commission criteria but does not replace clinical judgment. Please correlate findings with complete clinical assessment.</p>
-        <p><strong>Reference:</strong> Rubino F, et al. Definition and diagnostic criteria of clinical obesity. Lancet Diabetes Endocrinol. 2025.</p>
-    </div>
-</body>
-</html>`;
-  };
-
-  const generatePatientDataSummary = () => {
-    const anthro = patientData.anthropometrics;
-    const clinical = patientData.clinical;
-    const lab = patientData.laboratory;
-    
-    return `
-    <div class="section">
-        <h3>Patient Data Summary</h3>
-        
-        ${Object.keys(anthro).length > 0 ? `
-        <h4>Anthropometric Data</h4>
-        <ul>
-            ${anthro.height ? `<li>Height: ${anthro.height} inches</li>` : ''}
-            ${anthro.weight ? `<li>Weight: ${anthro.weight} pounds</li>` : ''}
-            ${anthro.bmi ? `<li>BMI: ${anthro.bmi} kg/m²</li>` : ''}
-            ${anthro.waistCircumference ? `<li>Waist Circumference: ${anthro.waistCircumference} inches</li>` : ''}
-            ${anthro.waistHipRatio ? `<li>Waist-to-Hip Ratio: ${anthro.waistHipRatio}</li>` : ''}
-        </ul>
-        ` : ''}
-        
-        ${Object.keys(clinical).some(key => clinical[key as keyof typeof clinical]) ? `
-        <h4>Clinical Findings</h4>
-        <ul>
-            ${clinical.type2Diabetes ? '<li>Type 2 Diabetes</li>' : ''}
-            ${clinical.hypertension ? '<li>Hypertension</li>' : ''}
-            ${clinical.sleepApnea ? '<li>Sleep Apnea</li>' : ''}
-            ${clinical.nafld ? '<li>NAFLD</li>' : ''}
-            ${clinical.breathlessness ? '<li>Breathlessness</li>' : ''}
-            ${clinical.fatigue ? '<li>Chronic Fatigue</li>' : ''}
-        </ul>
-        ` : ''}
-        
-        ${Object.keys(lab).some(key => lab[key as keyof typeof lab] !== undefined) ? `
-        <h4>Laboratory Values</h4>
-        <ul>
-            ${lab.fastingGlucose ? `<li>Fasting Glucose: ${lab.fastingGlucose} mg/dL</li>` : ''}
-            ${lab.hba1c ? `<li>HbA1c: ${lab.hba1c}%</li>` : ''}
-            ${lab.triglycerides ? `<li>Triglycerides: ${lab.triglycerides} mg/dL</li>` : ''}
-            ${lab.hdl ? `<li>HDL: ${lab.hdl} mg/dL</li>` : ''}
-        </ul>
-        ` : ''}
-    </div>`;
   };
 
   return (
