@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { DiagnosticResult, PatientData } from "@/types/clinical";
-import { FileText, Download, AlertCircle, CheckCircle, AlertTriangle, TrendingUp } from "lucide-react";
+import { FileText, Download, AlertCircle, CheckCircle, AlertTriangle, TrendingUp, Copy, Check } from "lucide-react";
+import { useState } from "react";
 
 interface DiagnosticResultsProps {
   result: DiagnosticResult | null;
@@ -12,6 +13,8 @@ interface DiagnosticResultsProps {
 }
 
 export function DiagnosticResults({ result, patientData }: DiagnosticResultsProps) {
+  const [copied, setCopied] = useState(false);
+
   if (!result) {
     return (
       <Card className="medical-section h-fit">
@@ -83,6 +86,67 @@ export function DiagnosticResults({ result, patientData }: DiagnosticResultsProp
   };
 
   const classificationDetails = getClassificationDetails(result.classification);
+
+  const generateChartSummary = () => {
+    if (!result) return '';
+    
+    const anthro = patientData.anthropometrics;
+    const classificationDetails = getClassificationDetails(result.classification);
+    const currentDate = new Date().toLocaleDateString();
+    
+    let summary = `OBESITY ASSESSMENT (${currentDate})\n`;
+    summary += `Classification: ${classificationDetails.label}\n`;
+    
+    // Add key metrics
+    if (anthro.bmi) {
+      summary += `BMI: ${anthro.bmi} kg/m²`;
+      if (anthro.ethnicity) {
+        summary += ` (${anthro.ethnicity})`;
+      }
+      summary += '\n';
+    }
+    
+    if (anthro.waistCircumference) {
+      summary += `Waist circumference: ${anthro.waistCircumference}"\n`;
+    }
+    
+    // Add key findings
+    if (result.criteria.organDysfunction.length > 0) {
+      summary += `Organ dysfunction: ${result.criteria.organDysfunction.join(', ')}\n`;
+    }
+    
+    if (result.criteria.functionalLimitations.length > 0) {
+      summary += `Functional limitations: ${result.criteria.functionalLimitations.join(', ')}\n`;
+    }
+    
+    // Add clinical reasoning
+    summary += `Assessment: ${result.reasoning}\n`;
+    
+    // Add primary recommendations
+    if (result.recommendations.length > 0) {
+      summary += `Plan: ${result.recommendations[0]}`;
+      if (result.recommendations.length > 1) {
+        summary += `; ${result.recommendations[1]}`;
+      }
+      summary += '\n';
+    }
+    
+    summary += `Confidence: ${result.confidence}\n`;
+    summary += `Reference: Lancet Commission Criteria 2025`;
+    
+    return summary;
+  };
+
+  const copyChartSummary = async () => {
+    const summary = generateChartSummary();
+    try {
+      await navigator.clipboard.writeText(summary);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
 
   const exportReport = () => {
     if (!result) return;
@@ -306,6 +370,37 @@ export function DiagnosticResults({ result, patientData }: DiagnosticResultsProp
               )}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Chart Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <FileText className="h-4 w-4 text-primary" />
+            Chart Summary
+          </CardTitle>
+          <CardDescription>
+            Concise assessment ready for medical records
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="bg-muted/50 p-4 rounded-lg font-mono text-sm leading-relaxed whitespace-pre-line border">
+            {generateChartSummary()}
+          </div>
+          <Button onClick={copyChartSummary} className="w-full" variant="outline">
+            {copied ? (
+              <>
+                <Check className="h-4 w-4 mr-2 text-success" />
+                Copied to Clipboard
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Chart Summary
+              </>
+            )}
+          </Button>
         </CardContent>
       </Card>
 
