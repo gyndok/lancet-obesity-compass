@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { AnthropometricData } from "@/types/clinical";
+import { isAsianEthnicity } from "@/lib/ethnicity";
 import { Calculator } from "lucide-react";
 
 interface AnthropometricFormProps {
@@ -57,18 +58,7 @@ export function AnthropometricForm({ data, onUpdate }: AnthropometricFormProps) 
   };
 
   const getBMICategory = (bmi: number) => {
-    const ethnicity = formData.ethnicity?.toLowerCase() || '';
-    const isAsian = ethnicity === 'asian' || 
-                   ethnicity.includes('east asian') || 
-                   ethnicity.includes('south asian') || 
-                   ethnicity.includes('southeast asian') ||
-                   ethnicity === 'chinese' ||
-                   ethnicity === 'japanese' ||
-                   ethnicity === 'korean' ||
-                   ethnicity === 'indian' ||
-                   ethnicity === 'vietnamese' ||
-                   ethnicity === 'thai' ||
-                   ethnicity === 'filipino';
+    const isAsian = isAsianEthnicity(formData.ethnicity);
     
     if (bmi < 18.5) return { category: "Underweight", color: "blue" };
     
