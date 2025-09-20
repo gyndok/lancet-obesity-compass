@@ -1,4 +1,5 @@
 import { PatientData, DiagnosticResult, DiagnosticCriteria } from "@/types/clinical";
+import { isAsianEthnicity } from "./ethnicity";
 
 export class DiagnosticEngine {
   static evaluate(data: PatientData): DiagnosticResult | null {
@@ -60,18 +61,7 @@ export class DiagnosticEngine {
     }
 
     // Ethnicity-specific BMI thresholds
-    const ethnicity = anthro.ethnicity?.toLowerCase() || '';
-    const isAsian = ethnicity === 'asian' || 
-                   ethnicity.includes('east asian') || 
-                   ethnicity.includes('south asian') || 
-                   ethnicity.includes('southeast asian') ||
-                   ethnicity === 'chinese' ||
-                   ethnicity === 'japanese' ||
-                   ethnicity === 'korean' ||
-                   ethnicity === 'indian' ||
-                   ethnicity === 'vietnamese' ||
-                   ethnicity === 'thai' ||
-                   ethnicity === 'filipino';
+    const isAsian = isAsianEthnicity(anthro.ethnicity);
     const bmiPreObesityThreshold = isAsian ? 23 : 25; // Pre-obesity/Overweight
     const bmiObesityThreshold = isAsian ? 27 : 30; // Class I Obesity
     const bmiNormalThreshold = isAsian ? 22.9 : 25; // Normal BMI upper limit
