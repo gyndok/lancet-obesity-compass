@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, FileText, Calculator, User, ExternalLink, RotateCcw } from "lucide-react";
+import { Stethoscope, FileText, Calculator, User, ExternalLink, RotateCcw, ArrowLeft } from "lucide-react";
 import { AnthropometricForm } from "@/components/forms/AnthropometricForm";
 import { ClinicalForm } from "@/components/forms/ClinicalForm";
 import { LaboratoryForm } from "@/components/forms/LaboratoryForm";
@@ -13,6 +14,7 @@ import { DiagnosticEngine } from "@/lib/diagnostic-engine";
 import { PatientData, DiagnosticResult } from "@/types/clinical";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [patientData, setPatientData] = useState<PatientData>({
     anthropometrics: {},
     clinical: {},
@@ -22,6 +24,30 @@ const Index = () => {
   
   const [diagnosticResult, setDiagnosticResult] = useState<DiagnosticResult | null>(null);
   const [activeTab, setActiveTab] = useState("anthropometric");
+
+  // Load interview data on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('interview-assessment-data');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        if (parsed.anthropometrics) {
+          const anthroData = {
+            ...patientData.anthropometrics,
+            height: parsed.anthropometrics.height,
+            weight: parsed.anthropometrics.weight,
+            bodyFatPercentage: parsed.anthropometrics.bodyFatPercentage,
+          };
+          setPatientData(prev => ({ ...prev, anthropometrics: anthroData }));
+          const result = DiagnosticEngine.evaluate({ ...patientData, anthropometrics: anthroData });
+          setDiagnosticResult(result);
+        }
+        localStorage.removeItem('interview-assessment-data');
+      } catch (e) {
+        console.error('Failed to parse interview data', e);
+      }
+    }
+  }, []);
 
   const handleDataUpdate = (section: keyof PatientData, data: any) => {
     const updatedData = {
