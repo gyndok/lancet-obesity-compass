@@ -2,12 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { UserPlus, UserCheck, Stethoscope, Moon, Sun } from 'lucide-react';
-import { useInterviewState } from '@/hooks/useInterviewState';
 import { useEffect, useState } from 'react';
 
 export default function Landing() {
   const navigate = useNavigate();
-  const { setVisitType, reset, state } = useInterviewState();
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -21,14 +19,50 @@ export default function Landing() {
   };
 
   const handleInitialVisit = () => {
-    reset();
-    setVisitType('initial');
+    // Clear any existing interview data
+    localStorage.removeItem('weight-clinic-interview');
+    // Set new interview state
+    const newState = {
+      visitType: 'initial',
+      currentQuestionIndex: 0,
+      responses: [],
+      startTime: Date.now(),
+      elapsedTime: 0,
+      isPaused: false,
+      bmiData: {
+        height: null,
+        weight: null,
+        heightInFeet: null,
+        heightInInches: null,
+        useFeetInches: true,
+      },
+      importedData: '',
+      isComplete: false,
+    };
+    localStorage.setItem('weight-clinic-interview', JSON.stringify(newState));
     navigate('/interview/initial');
   };
 
   const handleReturnVisit = () => {
-    reset();
-    setVisitType('return');
+    localStorage.removeItem('weight-clinic-interview');
+    const newState = {
+      visitType: 'return',
+      currentQuestionIndex: 0,
+      responses: [],
+      startTime: Date.now(),
+      elapsedTime: 0,
+      isPaused: false,
+      bmiData: {
+        height: null,
+        weight: null,
+        heightInFeet: null,
+        heightInInches: null,
+        useFeetInches: true,
+      },
+      importedData: '',
+      isComplete: false,
+    };
+    localStorage.setItem('weight-clinic-interview', JSON.stringify(newState));
     navigate('/interview/return');
   };
 
