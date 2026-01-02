@@ -97,6 +97,16 @@ const Index = () => {
     setActiveTab("anthropometric");
   };
 
+  const handleStartOver = () => {
+    // Clear all data
+    handleClearAll();
+    // Clear interview data from localStorage
+    localStorage.removeItem('weight-clinic-interview');
+    localStorage.removeItem('interview-assessment-data');
+    // Navigate to landing page
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
@@ -128,6 +138,15 @@ const Index = () => {
               </div>
             </div>
             <div className="ml-auto flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleStartOver}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Start Over
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
