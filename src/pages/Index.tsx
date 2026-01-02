@@ -31,8 +31,10 @@ const Index = () => {
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
+        let updatedPatientData = { ...patientData };
+
         if (parsed.anthropometrics) {
-          const anthroData = {
+          updatedPatientData.anthropometrics = {
             ...patientData.anthropometrics,
             height: parsed.anthropometrics.height,
             weight: parsed.anthropometrics.weight,
@@ -41,10 +43,18 @@ const Index = () => {
             sex: parsed.anthropometrics.sex,
             ethnicity: parsed.anthropometrics.ethnicity,
           };
-          setPatientData(prev => ({ ...prev, anthropometrics: anthroData }));
-          const result = DiagnosticEngine.evaluate({ ...patientData, anthropometrics: anthroData });
-          setDiagnosticResult(result);
         }
+
+        if (parsed.functional) {
+          updatedPatientData.functional = {
+            ...patientData.functional,
+            ...parsed.functional,
+          };
+        }
+
+        setPatientData(updatedPatientData);
+        const result = DiagnosticEngine.evaluate(updatedPatientData);
+        setDiagnosticResult(result);
         localStorage.removeItem('interview-assessment-data');
       } catch (e) {
         console.error('Failed to parse interview data', e);
