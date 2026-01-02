@@ -37,7 +37,10 @@ export const initialVisitQuestions: Question[] = [
   { id: 21, section: "Medical History", question: "Other medical conditions or surgeries?", type: "textarea" },
   { id: 22, section: "Medical History", question: "Mental health concerns?", type: "textarea" },
   { id: 23, section: "Medical History", question: "Family history (obesity, thyroid, metabolic issues)?", type: "textarea" },
-  
+
+  // Functional Limitations
+  { id: 54, section: "Functional Limitations", question: "Does the patient experience any limitations in Activities of Daily Living (ADL)?", type: "checkbox", options: ["Mobility Limitations", "Bathing Difficulty", "Dressing Difficulty", "Toileting Difficulty", "Continence Issues", "Eating Difficulty", "None"] },
+
   // Lifestyle
   { id: 24, section: "Lifestyle", question: "Describe current diet briefly.", type: "textarea" },
   { id: 25, section: "Lifestyle", question: "Any food sensitivities or eating patterns?", type: "text" },

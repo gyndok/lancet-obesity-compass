@@ -118,6 +118,28 @@ export default function InitialVisitInterview() {
       );
     }
 
+    // Extract ADL limitations from responses (question id 54)
+    const adlResponse = state.responses.find(r => r.questionId === 54);
+    const adlAnswers = Array.isArray(adlResponse?.answer) ? adlResponse.answer : [];
+    
+    // Map ADL answers to functional data fields
+    const adlMapping: Record<string, keyof import('@/types/clinical').FunctionalData> = {
+      'Mobility Limitations': 'mobilityLimitations',
+      'Bathing Difficulty': 'bathingDifficulty',
+      'Dressing Difficulty': 'dressingDifficulty',
+      'Toileting Difficulty': 'toiletingDifficulty',
+      'Continence Issues': 'continenceDifficulty',
+      'Eating Difficulty': 'eatingDifficulty',
+    };
+
+    const functionalData: Record<string, boolean> = {};
+    adlAnswers.forEach(answer => {
+      const field = adlMapping[answer];
+      if (field) {
+        functionalData[field] = true;
+      }
+    });
+
     // Store interview data for assessment
     const assessmentData = {
       anthropometrics: {
@@ -128,6 +150,7 @@ export default function InitialVisitInterview() {
         ethnicity: ethnicityResponse?.answer ? ethnicityMap[ethnicityResponse.answer as string] : undefined,
         bodyFatPercentage: bodyFatPercentage,
       },
+      functional: functionalData,
       responses: state.responses,
       visitType: state.visitType,
     };
