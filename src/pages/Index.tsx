@@ -52,6 +52,13 @@ const Index = () => {
           };
         }
 
+        if (parsed.clinical) {
+          updatedPatientData.clinical = {
+            ...patientData.clinical,
+            ...parsed.clinical,
+          };
+        }
+
         setPatientData(updatedPatientData);
         const result = DiagnosticEngine.evaluate(updatedPatientData);
         setDiagnosticResult(result);

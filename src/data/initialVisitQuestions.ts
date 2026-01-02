@@ -41,6 +41,16 @@ export const initialVisitQuestions: Question[] = [
   // Functional Limitations
   { id: 54, section: "Functional Limitations", question: "Does the patient experience any limitations in Activities of Daily Living (ADL)?", type: "checkbox", options: ["Mobility Limitations", "Bathing Difficulty", "Dressing Difficulty", "Toileting Difficulty", "Continence Issues", "Eating Difficulty", "None"] },
 
+  // Current Symptoms
+  { id: 55, section: "Current Symptoms", question: "Does the patient have any respiratory or exercise-related symptoms?", type: "checkbox", options: ["Breathlessness/Dyspnea", "Chronic Fatigue", "None"] },
+  { id: 56, section: "Current Symptoms", question: "Does the patient have any physical symptoms?", type: "checkbox", options: ["Chronic Pain", "Urinary Incontinence", "Gastroesophageal Reflux (GERD)", "None"] },
+  { id: 57, section: "Current Symptoms", question: "Does the patient have any sleep or mental health concerns?", type: "checkbox", options: ["Sleep Disorders", "Mental Health Issues (Depression/Anxiety)", "None"] },
+
+  // Past Medical History (Clinical)
+  { id: 58, section: "Past Medical History", question: "Does the patient have any metabolic or endocrine conditions?", type: "checkbox", options: ["Type 2 Diabetes", "Polycystic Ovary Syndrome (PCOS)", "None"] },
+  { id: 59, section: "Past Medical History", question: "Does the patient have any cardiovascular conditions?", type: "checkbox", options: ["Hypertension", "Cardiovascular Disease", "None"] },
+  { id: 60, section: "Past Medical History", question: "Does the patient have any of these other conditions?", type: "checkbox", options: ["Sleep Apnea", "NAFLD/NASH", "Osteoarthritis", "None"] },
+
   // Lifestyle
   { id: 24, section: "Lifestyle", question: "Describe current diet briefly.", type: "textarea" },
   { id: 25, section: "Lifestyle", question: "Any food sensitivities or eating patterns?", type: "text" },
