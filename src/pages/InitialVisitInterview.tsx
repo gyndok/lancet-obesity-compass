@@ -94,16 +94,39 @@ export default function InitialVisitInterview() {
       'Other': 'other',
     };
 
+    // Calculate height in inches
+    const heightInches = state.bmiData.useFeetInches
+      ? ((state.bmiData.heightInFeet || 0) * 12) + (state.bmiData.heightInInches || 0)
+      : state.bmiData.height;
+
+    // Calculate body fat % using Deurenberg formula
+    // Body fat % = (1.20 × BMI) + (0.23 × age) − (10.8 × sex) − 5.4
+    // BMI = weight (kg) / height (m²), sex = 1 for male, 0 for female
+    let bodyFatPercentage: number | undefined;
+    const age = ageResponse?.answer ? Number(ageResponse.answer) : undefined;
+    const sexValue = sexResponse?.answer ? (sexResponse.answer as string).toLowerCase() : undefined;
+    
+    if (heightInches && state.bmiData.weight && age && sexValue) {
+      // Convert imperial to metric
+      const heightMeters = heightInches * 0.0254;
+      const weightKg = state.bmiData.weight * 0.453592;
+      const bmi = weightKg / (heightMeters * heightMeters);
+      const sexMultiplier = sexValue === 'male' ? 1 : 0;
+      
+      bodyFatPercentage = parseFloat(
+        ((1.20 * bmi) + (0.23 * age) - (10.8 * sexMultiplier) - 5.4).toFixed(1)
+      );
+    }
+
     // Store interview data for assessment
     const assessmentData = {
       anthropometrics: {
-        height: state.bmiData.useFeetInches
-          ? ((state.bmiData.heightInFeet || 0) * 12) + (state.bmiData.heightInInches || 0)
-          : state.bmiData.height,
+        height: heightInches,
         weight: state.bmiData.weight,
-        age: ageResponse?.answer ? Number(ageResponse.answer) : undefined,
-        sex: sexResponse?.answer ? (sexResponse.answer as string).toLowerCase() as 'male' | 'female' : undefined,
+        age: age,
+        sex: sexValue as 'male' | 'female' | undefined,
         ethnicity: ethnicityResponse?.answer ? ethnicityMap[ethnicityResponse.answer as string] : undefined,
+        bodyFatPercentage: bodyFatPercentage,
       },
       responses: state.responses,
       visitType: state.visitType,
