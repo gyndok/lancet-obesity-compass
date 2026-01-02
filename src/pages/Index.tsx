@@ -27,10 +27,15 @@ const Index = () => {
 
   // Load interview data on mount
   useEffect(() => {
+    // Check for AI-parsed data first
+    const aiParsedData = localStorage.getItem('ai-parsed-patient-data');
     const savedData = localStorage.getItem('interview-assessment-data');
-    if (savedData) {
+    
+    const dataToLoad = savedData || aiParsedData;
+    
+    if (dataToLoad) {
       try {
-        const parsed = JSON.parse(savedData);
+        const parsed = JSON.parse(dataToLoad);
         let updatedPatientData = { ...patientData };
 
         if (parsed.anthropometrics) {
@@ -62,7 +67,10 @@ const Index = () => {
         setPatientData(updatedPatientData);
         const result = DiagnosticEngine.evaluate(updatedPatientData);
         setDiagnosticResult(result);
+        
+        // Clean up both storage keys
         localStorage.removeItem('interview-assessment-data');
+        localStorage.removeItem('ai-parsed-patient-data');
       } catch (e) {
         console.error('Failed to parse interview data', e);
       }

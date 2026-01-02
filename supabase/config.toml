@@ -1,0 +1,4 @@
+project_id = "zvrbvkfjvntyegsdazoz"
+
+[functions.parse-patient-data]
+verify_jwt = false
