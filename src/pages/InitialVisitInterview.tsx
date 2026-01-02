@@ -226,6 +226,38 @@ export default function InitialVisitInterview() {
             onChange={setImportedData}
             onSkip={handleNext}
             onContinue={handleNext}
+            onParsedData={(parsedData) => {
+              // Auto-fill BMI data from AI extraction
+              if (parsedData.measurements) {
+                const { heightFeet, heightInches, heightTotalInches, weight } = parsedData.measurements;
+                setBmiData({
+                  heightInFeet: heightFeet || null,
+                  heightInInches: heightInches || null,
+                  height: heightTotalInches || null,
+                  weight: weight || null,
+                  useFeetInches: !!(heightFeet || heightInches),
+                });
+              }
+              // Auto-fill demographic responses
+              if (parsedData.demographics) {
+                if (parsedData.demographics.age) {
+                  setResponse(1, parsedData.demographics.age);
+                }
+                if (parsedData.demographics.sex) {
+                  setResponse(2, parsedData.demographics.sex === 'male' ? 'Male' : 'Female');
+                }
+                if (parsedData.demographics.ethnicity) {
+                  const ethnicityMap: Record<string, string> = {
+                    'caucasian': 'Caucasian',
+                    'african-american': 'African American',
+                    'hispanic': 'Hispanic/Latino',
+                    'asian': 'Asian',
+                    'other': 'Other',
+                  };
+                  setResponse(53, ethnicityMap[parsedData.demographics.ethnicity] || 'Other');
+                }
+              }
+            }}
           />
         )}
 
