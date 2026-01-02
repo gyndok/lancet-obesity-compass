@@ -2,6 +2,7 @@ export interface Question {
   id: number;
   section: string;
   question: string;
+  description?: string;
   type: 'text' | 'textarea' | 'number' | 'radio' | 'checkbox' | 'dropdown' | 'date';
   options?: string[];
 }

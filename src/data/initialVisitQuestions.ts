@@ -11,12 +11,13 @@ export const initialVisitQuestions: Question[] = [
   { id: 4, section: "Introduction & Verification", question: "Does the patient have a primary care provider?", type: "radio", options: ["Yes", "No"] },
   
   // Weight History
-  { id: 5, section: "Weight History", question: "When did weight gain begin (age or stage of life)?", type: "text" },
-  { id: 6, section: "Weight History", question: "Highest adult weight (lbs)?", type: "number" },
-  { id: 7, section: "Weight History", question: "Lowest adult weight (lbs)?", type: "number" },
-  { id: 8, section: "Weight History", question: "Triggers for weight gain?", type: "checkbox", options: ["Pregnancy", "Medications", "Stress", "Dietary habits", "Other"] },
-  { id: 9, section: "Weight History", question: "Prior weight loss methods attempted?", type: "checkbox", options: ["Self-directed diet", "Exercise", "GLP-1 medication", "Surgery", "Meal replacement"] },
-  { id: 10, section: "Weight History", question: "Additional details about weight loss methods?", type: "textarea" },
+  { 
+    id: 5, 
+    section: "Weight History", 
+    question: "Tell me the story of your weight", 
+    description: "Age when the problem began, triggers for weight gain, highest adult weight, lowest adult weight, remedies for prior weight loss attempts",
+    type: "textarea" 
+  },
   { id: 52, section: "Weight History", question: "What is your personal weight loss goal (lbs)?", type: "number" },
   
   // Medications & Allergies

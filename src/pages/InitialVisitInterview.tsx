@@ -296,6 +296,11 @@ export default function InitialVisitInterview() {
                     <h2 className="text-xl font-semibold mt-2">
                       {currentQuestion.question}
                     </h2>
+                    {currentQuestion.description && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {currentQuestion.description}
+                      </p>
+                    )}
                   </div>
                   <QuestionForm
                     question={currentQuestion}

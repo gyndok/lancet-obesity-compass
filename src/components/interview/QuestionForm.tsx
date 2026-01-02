@@ -51,7 +51,7 @@ export function QuestionForm({ question, currentResponse, onAnswer }: QuestionFo
           value={value as string}
           onChange={(e) => handleChange(e.target.value)}
           placeholder="Enter your answer..."
-          rows={4}
+          rows={question.description ? 8 : 4}
           className="text-lg"
           autoFocus
         />
