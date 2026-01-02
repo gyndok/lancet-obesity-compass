@@ -140,6 +140,28 @@ export default function InitialVisitInterview() {
       }
     });
 
+    // Extract clinical symptoms and medical history from responses
+    const symptomMappings = [
+      { questionId: 55, mappings: { 'Breathlessness/Dyspnea': 'breathlessness', 'Chronic Fatigue': 'fatigue' } },
+      { questionId: 56, mappings: { 'Chronic Pain': 'chronicPain', 'Urinary Incontinence': 'urinaryIncontinence', 'Gastroesophageal Reflux (GERD)': 'reflux' } },
+      { questionId: 57, mappings: { 'Sleep Disorders': 'sleepDisorders', 'Mental Health Issues (Depression/Anxiety)': 'mentalHealth' } },
+      { questionId: 58, mappings: { 'Type 2 Diabetes': 'type2Diabetes', 'Polycystic Ovary Syndrome (PCOS)': 'pcos' } },
+      { questionId: 59, mappings: { 'Hypertension': 'hypertension', 'Cardiovascular Disease': 'cardiovascularDisease' } },
+      { questionId: 60, mappings: { 'Sleep Apnea': 'sleepApnea', 'NAFLD/NASH': 'nafld', 'Osteoarthritis': 'osteoarthritis' } },
+    ];
+
+    const clinicalData: Record<string, boolean> = {};
+    symptomMappings.forEach(({ questionId, mappings }) => {
+      const response = state.responses.find(r => r.questionId === questionId);
+      const answers = Array.isArray(response?.answer) ? response.answer : [];
+      answers.forEach(answer => {
+        const field = mappings[answer as keyof typeof mappings];
+        if (field) {
+          clinicalData[field] = true;
+        }
+      });
+    });
+
     // Store interview data for assessment
     const assessmentData = {
       anthropometrics: {
@@ -151,6 +173,7 @@ export default function InitialVisitInterview() {
         bodyFatPercentage: bodyFatPercentage,
       },
       functional: functionalData,
+      clinical: clinicalData,
       responses: state.responses,
       visitType: state.visitType,
     };
