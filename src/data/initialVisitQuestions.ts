@@ -1,6 +1,11 @@
 import { Question } from "@/types/interview";
 
 export const initialVisitQuestions: Question[] = [
+  // Patient Demographics
+  { id: 1, section: "Patient Demographics", question: "Patient age (years)?", type: "number" },
+  { id: 2, section: "Patient Demographics", question: "Patient sex?", type: "radio", options: ["Male", "Female"] },
+  { id: 53, section: "Patient Demographics", question: "Patient ethnicity?", type: "dropdown", options: ["Caucasian", "African American", "Hispanic/Latino", "Asian", "Other"] },
+
   // Introduction & Verification
   { id: 3, section: "Introduction & Verification", question: "Primary goal for this visit?", type: "textarea" },
   { id: 4, section: "Introduction & Verification", question: "Does the patient have a primary care provider?", type: "radio", options: ["Yes", "No"] },

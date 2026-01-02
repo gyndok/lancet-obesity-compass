@@ -80,6 +80,20 @@ export default function InitialVisitInterview() {
   };
 
   const handleProceedToAssessment = () => {
+    // Extract demographic data from responses
+    const ageResponse = state.responses.find(r => r.questionId === 1);
+    const sexResponse = state.responses.find(r => r.questionId === 2);
+    const ethnicityResponse = state.responses.find(r => r.questionId === 53);
+
+    // Map ethnicity to form value
+    const ethnicityMap: Record<string, string> = {
+      'Caucasian': 'caucasian',
+      'African American': 'african-american',
+      'Hispanic/Latino': 'hispanic',
+      'Asian': 'asian',
+      'Other': 'other',
+    };
+
     // Store interview data for assessment
     const assessmentData = {
       anthropometrics: {
@@ -87,6 +101,9 @@ export default function InitialVisitInterview() {
           ? ((state.bmiData.heightInFeet || 0) * 12) + (state.bmiData.heightInInches || 0)
           : state.bmiData.height,
         weight: state.bmiData.weight,
+        age: ageResponse?.answer ? Number(ageResponse.answer) : undefined,
+        sex: sexResponse?.answer ? (sexResponse.answer as string).toLowerCase() as 'male' | 'female' : undefined,
+        ethnicity: ethnicityResponse?.answer ? ethnicityMap[ethnicityResponse.answer as string] : undefined,
       },
       responses: state.responses,
       visitType: state.visitType,

@@ -37,6 +37,9 @@ const Index = () => {
             height: parsed.anthropometrics.height,
             weight: parsed.anthropometrics.weight,
             bodyFatPercentage: parsed.anthropometrics.bodyFatPercentage,
+            age: parsed.anthropometrics.age,
+            sex: parsed.anthropometrics.sex,
+            ethnicity: parsed.anthropometrics.ethnicity,
           };
           setPatientData(prev => ({ ...prev, anthropometrics: anthroData }));
           const result = DiagnosticEngine.evaluate({ ...patientData, anthropometrics: anthroData });
