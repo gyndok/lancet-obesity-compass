@@ -11,6 +11,7 @@ import { QuestionForm } from '@/components/interview/QuestionForm';
 import { BMICalculator } from '@/components/interview/BMICalculator';
 import { DataImport } from '@/components/interview/DataImport';
 import { InterviewSummary } from '@/components/interview/InterviewSummary';
+import { ClinicalDataHeader } from '@/components/interview/ClinicalDataHeader';
 
 type InterviewPhase = 'import' | 'bmi' | 'questions' | 'summary';
 
@@ -208,6 +209,21 @@ export default function InitialVisitInterview() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-3xl">
+        {/* Clinical Data Header */}
+        {(phase === 'bmi' || phase === 'questions') && (
+          <ClinicalDataHeader
+            age={state.responses.find(r => r.questionId === 1)?.answer as number | null}
+            sex={state.responses.find(r => r.questionId === 2)?.answer as string | null}
+            weight={state.bmiData.weight}
+            heightInches={
+              state.bmiData.useFeetInches
+                ? ((state.bmiData.heightInFeet || 0) * 12) + (state.bmiData.heightInInches || 0) || null
+                : state.bmiData.height
+            }
+            goalWeight={state.responses.find(r => r.questionId === 6)?.answer as number | null}
+          />
+        )}
+
         {/* Progress */}
         {phase === 'questions' && currentQuestion && (
           <div className="mb-6">
