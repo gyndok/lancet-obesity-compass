@@ -14,16 +14,214 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      formulary_rules: {
+        Row: {
+          created_at: string
+          id: string
+          last_verified_at: string | null
+          payer_name: string
+          rule_set: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_verified_at?: string | null
+          payer_name: string
+          rule_set?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_verified_at?: string | null
+          payer_name?: string
+          rule_set?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      medication_change_log: {
+        Row: {
+          after_snapshot: Json | null
+          before_snapshot: Json | null
+          change_summary: string
+          changed_at: string
+          changed_by: string | null
+          id: string
+          medication_id: string
+        }
+        Insert: {
+          after_snapshot?: Json | null
+          before_snapshot?: Json | null
+          change_summary: string
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          medication_id: string
+        }
+        Update: {
+          after_snapshot?: Json | null
+          before_snapshot?: Json | null
+          change_summary?: string
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          medication_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_change_log_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medications: {
+        Row: {
+          boxed_warning: string | null
+          brand_names: string[] | null
+          common_adverse_effects: string[] | null
+          comorbidity_fit_tags: string[] | null
+          contraindications: string[] | null
+          created_at: string
+          dosing_summary: string | null
+          drug_class: string
+          efficacy: Json | null
+          generic_name: string
+          hepatic_adjustment: string | null
+          icd10_suggestions: string[] | null
+          id: string
+          interactions: string[] | null
+          is_active: boolean
+          last_reviewed_at: string | null
+          med_references: Json | null
+          missed_dose_rules: string | null
+          moa_long: string | null
+          moa_short: string | null
+          monitoring: Json | null
+          pa_template: string | null
+          patient_counseling: string | null
+          pregnancy_lactation: Json | null
+          renal_adjustment: string | null
+          route: Database["public"]["Enums"]["medication_route"]
+          serious_adverse_effects: string[] | null
+          serious_warnings: string[] | null
+          titration_schedule: Json | null
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          boxed_warning?: string | null
+          brand_names?: string[] | null
+          common_adverse_effects?: string[] | null
+          comorbidity_fit_tags?: string[] | null
+          contraindications?: string[] | null
+          created_at?: string
+          dosing_summary?: string | null
+          drug_class: string
+          efficacy?: Json | null
+          generic_name: string
+          hepatic_adjustment?: string | null
+          icd10_suggestions?: string[] | null
+          id?: string
+          interactions?: string[] | null
+          is_active?: boolean
+          last_reviewed_at?: string | null
+          med_references?: Json | null
+          missed_dose_rules?: string | null
+          moa_long?: string | null
+          moa_short?: string | null
+          monitoring?: Json | null
+          pa_template?: string | null
+          patient_counseling?: string | null
+          pregnancy_lactation?: Json | null
+          renal_adjustment?: string | null
+          route?: Database["public"]["Enums"]["medication_route"]
+          serious_adverse_effects?: string[] | null
+          serious_warnings?: string[] | null
+          titration_schedule?: Json | null
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          boxed_warning?: string | null
+          brand_names?: string[] | null
+          common_adverse_effects?: string[] | null
+          comorbidity_fit_tags?: string[] | null
+          contraindications?: string[] | null
+          created_at?: string
+          dosing_summary?: string | null
+          drug_class?: string
+          efficacy?: Json | null
+          generic_name?: string
+          hepatic_adjustment?: string | null
+          icd10_suggestions?: string[] | null
+          id?: string
+          interactions?: string[] | null
+          is_active?: boolean
+          last_reviewed_at?: string | null
+          med_references?: Json | null
+          missed_dose_rules?: string | null
+          moa_long?: string | null
+          moa_short?: string | null
+          monitoring?: Json | null
+          pa_template?: string | null
+          patient_counseling?: string | null
+          pregnancy_lactation?: Json | null
+          renal_adjustment?: string | null
+          route?: Database["public"]["Enums"]["medication_route"]
+          serious_adverse_effects?: string[] | null
+          serious_warnings?: string[] | null
+          titration_schedule?: Json | null
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "clinician" | "user"
+      medication_route:
+        | "oral"
+        | "weekly_injection"
+        | "daily_injection"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +348,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "clinician", "user"],
+      medication_route: [
+        "oral",
+        "weekly_injection",
+        "daily_injection",
+        "other",
+      ],
+    },
   },
 } as const
