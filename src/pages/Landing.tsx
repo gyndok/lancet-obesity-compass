@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { UserPlus, UserCheck, Stethoscope, Moon, Sun } from 'lucide-react';
+import { UserPlus, UserCheck, Stethoscope, Moon, Sun, Pill } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Landing() {
@@ -165,14 +165,22 @@ export default function Landing() {
             </Card>
           </div>
 
-          {/* Direct Assessment Link */}
-          <div className="text-center pt-8 border-t">
-            <p className="text-sm text-muted-foreground mb-3">
-              Or go directly to the clinical assessment
-            </p>
-            <Button variant="outline" onClick={handleDirectAssessment}>
-              Open Obesity Assessment Tool
-            </Button>
+          {/* Quick Links */}
+          <div className="pt-8 border-t">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-2">Clinical Tools</p>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleDirectAssessment}>
+                    Open Obesity Assessment Tool
+                  </Button>
+                  <Button variant="outline" onClick={() => navigate('/formulary')}>
+                    <Pill className="h-4 w-4 mr-2" />
+                    Formulary
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
