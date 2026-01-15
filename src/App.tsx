@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import InitialVisitInterview from "./pages/InitialVisitInterview";
 import ReturnVisitInterview from "./pages/ReturnVisitInterview";
@@ -22,6 +23,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/assessment" element={<Index />} />
           <Route path="/interview/initial" element={<InitialVisitInterview />} />
           <Route path="/interview/return" element={<ReturnVisitInterview />} />

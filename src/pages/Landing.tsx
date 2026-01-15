@@ -170,13 +170,16 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground mb-2">Clinical Tools</p>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap justify-center">
                   <Button variant="outline" onClick={handleDirectAssessment}>
                     Open Obesity Assessment Tool
                   </Button>
                   <Button variant="outline" onClick={() => navigate('/formulary')}>
                     <Pill className="h-4 w-4 mr-2" />
                     Formulary
+                  </Button>
+                  <Button onClick={() => navigate('/auth')}>
+                    Sign In
                   </Button>
                 </div>
               </div>
