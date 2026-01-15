@@ -96,6 +96,8 @@ export type Database = {
           id: string
           interactions: string[] | null
           is_active: boolean
+          label_imported_at: string | null
+          label_set_id: string | null
           last_reviewed_at: string | null
           med_references: Json | null
           missed_dose_rules: string | null
@@ -105,6 +107,7 @@ export type Database = {
           pa_template: string | null
           patient_counseling: string | null
           pregnancy_lactation: Json | null
+          raw_label_data: Json | null
           renal_adjustment: string | null
           route: Database["public"]["Enums"]["medication_route"]
           serious_adverse_effects: string[] | null
@@ -129,6 +132,8 @@ export type Database = {
           id?: string
           interactions?: string[] | null
           is_active?: boolean
+          label_imported_at?: string | null
+          label_set_id?: string | null
           last_reviewed_at?: string | null
           med_references?: Json | null
           missed_dose_rules?: string | null
@@ -138,6 +143,7 @@ export type Database = {
           pa_template?: string | null
           patient_counseling?: string | null
           pregnancy_lactation?: Json | null
+          raw_label_data?: Json | null
           renal_adjustment?: string | null
           route?: Database["public"]["Enums"]["medication_route"]
           serious_adverse_effects?: string[] | null
@@ -162,6 +168,8 @@ export type Database = {
           id?: string
           interactions?: string[] | null
           is_active?: boolean
+          label_imported_at?: string | null
+          label_set_id?: string | null
           last_reviewed_at?: string | null
           med_references?: Json | null
           missed_dose_rules?: string | null
@@ -171,6 +179,7 @@ export type Database = {
           pa_template?: string | null
           patient_counseling?: string | null
           pregnancy_lactation?: Json | null
+          raw_label_data?: Json | null
           renal_adjustment?: string | null
           route?: Database["public"]["Enums"]["medication_route"]
           serious_adverse_effects?: string[] | null
