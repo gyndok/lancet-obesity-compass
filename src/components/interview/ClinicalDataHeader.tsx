@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card';
-import { User, Scale, Target, Calendar } from 'lucide-react';
+import { User, Scale, Target, Calendar, Drumstick } from 'lucide-react';
 
 interface ClinicalDataHeaderProps {
   age: number | null;
@@ -25,6 +25,12 @@ export function ClinicalDataHeader({
   // So weight = 25 × height² / 703
   const goalWeightBMI25 = heightInches 
     ? Math.round((25 * heightInches * heightInches) / 703)
+    : null;
+
+  // Calculate daily protein intake: 1.2g per kg body weight
+  // Convert lbs to kg: weight / 2.205
+  const proteinIntake = weight 
+    ? Math.round((weight / 2.205) * 1.2)
     : null;
 
   // Calculate weeks to goal (assuming 1-2 lbs/week loss, use 1.5 avg)
@@ -70,6 +76,16 @@ export function ClinicalDataHeader({
             <span>
               <span className="text-muted-foreground">Goal @BMI 25:</span>
               <span className="font-medium ml-1">{goalWeightBMI25} lbs</span>
+            </span>
+          </div>
+        )}
+
+        {proteinIntake && (
+          <div className="flex items-center gap-2">
+            <Drumstick className="h-4 w-4 text-muted-foreground" />
+            <span>
+              <span className="text-muted-foreground">Protein:</span>
+              <span className="font-medium ml-1">{proteinIntake}g/day</span>
             </span>
           </div>
         )}
